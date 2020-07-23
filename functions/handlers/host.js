@@ -1,7 +1,6 @@
 const { db, admin } = require('../util/admin');
 const firebase = require('firebase');
 
-
 const {
     validateSignupData,
     validateLoginData,
@@ -10,14 +9,15 @@ const {
 
 
 
-exports.signUp = (req , res)=>{
+exports.hostSignUp = (req , res)=>{
     const newUser = {
         email :req.body.email,
         password : req.body.password,
         confirmPassword : req.body.confirmPassword,
         handle : req.body.handle,
         address : req.body.address,
-        phone:req.body.phone       
+        phone:req.body.phone,  
+        createdAt : req.body.createdAt    
     };
 
     const {
@@ -27,8 +27,9 @@ exports.signUp = (req , res)=>{
 
     if(!valid) return res.status(400).json(errors);
 
+
     let token,userId;
-    db.doc(`/users/${newUser.handle}`).get()
+    db.doc(`/hosts/${newUser.handle}`).get()
         .then(doc =>{
             if(doc.exists){
                 return res.status(400).json({
@@ -41,7 +42,7 @@ exports.signUp = (req , res)=>{
                 }
         })
         .then((data)=>{
-            userId = data.user.uid;
+            hostId = data.user.uid;
             return data.user.getIdToken();
         })
         .then((idtoken)=>{
@@ -52,9 +53,9 @@ exports.signUp = (req , res)=>{
                 phone:newUser.phone,
                 address : newUser.address,
                 createdAt: new Date().toISOString(),
-                userId
+                hostId
             };
-            return db.doc(`/users/${newUser.handle}`).set(userData);
+            return db.doc(`/hosts/${newUser.handle}`).set(userData);
         })
         .then((data) => {
             return res.status(201).json({
@@ -68,7 +69,7 @@ exports.signUp = (req , res)=>{
             });
         })
 }
-exports.login = (req,res) => {
+exports.hostLogin = (req,res) => {
     const user = {
         email : req.body.email,
         password : req.body.password
@@ -78,8 +79,8 @@ exports.login = (req,res) => {
         valid,
         errors
     } = validateLoginData(user);
-    if (!valid) return res.status(400).json(errors)
 
+    if(!valid) return res.status(400).json(errors);
 
 
     firebase.auth()
