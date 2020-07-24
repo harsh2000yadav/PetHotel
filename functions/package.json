@@ -9,7 +9,11 @@
     "logs": "firebase functions:log"
   },
   "engines": {
+<<<<<<< HEAD
     "node": "14"
+=======
+    "node": "12"
+>>>>>>> 93fafa4c07bcb6aa69f981ebde53efd5d418c400
   },
   "dependencies": {
     "firebase-admin": "^8.10.0",
