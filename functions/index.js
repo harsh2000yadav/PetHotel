@@ -12,6 +12,7 @@ const {
 } = require('./util/admin')
 const  hostAuth = require('./util/hostAuth')
 const  userAuth = require('./util/userAuth')
+const  commonAuth = require('./util/commonAuth')
 const {
     signUp,
     login,
@@ -29,7 +30,7 @@ const {
 //host
 app.post('/host/signUp',hostSignUp);
 app.post('/host/login',hostLogin);
-app.get('/host',hostAuth,hostData);
+app.get('/host',commonAuth,hostData);
 //user
 app.post('/user/signUp',signUp);
 app.post('/user/login',login);

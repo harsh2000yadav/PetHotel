@@ -1,7 +1,9 @@
 const {
     admin,
     db
-} = require('./admin')
+} = require('./admin');
+
+
 
 module.exports = (req,res,next) => {
     let idtoken;
@@ -13,23 +15,21 @@ module.exports = (req,res,next) => {
             error : "Unauthorized"
         })
     }
-
+   
     admin.auth().verifyIdToken(idtoken)
         .then(decodedToken => {
             req.user = decodedToken;
             console.log(decodedToken)
-            return db.collection('users')
-                .where('userId', '==' , req.user.uid)
-                .limit(1)
-                .get()
+            admin.auth().getUser(req.user.uid)
+            .then((data) => {
+                return next();
+                })
+            .catch((err) =>{
+                console.error('Error while verifying token', err)
+                return res.status(403).json(err);
+            })  
+         
         })
-        .then((data)=>{
-            req.user.handel = data.docs[0].data().handle
-            return next();
-        })
-        .catch((err)=>{
-            console.error('Error while verifying token', err)
-            return res.status(403).json(err);
-        })
+       
 }
 
