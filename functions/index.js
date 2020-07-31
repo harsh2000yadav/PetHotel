@@ -20,7 +20,8 @@ const {
 
 const {
     hostSignUp,
-    hostLogin
+    hostLogin,
+    uploadHostImage
 } = require('./handlers/host');
 
 const {
@@ -30,7 +31,11 @@ const {
 //host
 app.post('/host/signUp',hostSignUp);
 app.post('/host/login',hostLogin);
-app.get('/host',hostAuth,hostData);
+
+
+app.get('/host',hostData);
+app.post('/host/image',uploadHostImage);
+
 //user
 app.post('/user/signUp',signUp);
 app.post('/user/login',login);

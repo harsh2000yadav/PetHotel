@@ -1,6 +1,6 @@
 const { db, admin } = require('../util/admin');
 const firebase = require('firebase');
-
+const config = require('../util/config')
 const {
     validateSignupData,
     validateLoginData,
@@ -11,13 +11,16 @@ const {
 
 exports.hostSignUp = (req , res)=>{
     const newUser = {
+        name : req.body.name,
         email :req.body.email,
+        body: req.body.body,
         password : req.body.password,
         confirmPassword : req.body.confirmPassword,
         handle : req.body.handle,
         address : req.body.address,
         phone:req.body.phone,  
-        createdAt : req.body.createdAt    
+        createdAt : req.body.createdAt,
+        image : req.body.image    
     };
 
     const {
@@ -103,4 +106,71 @@ exports.hostLogin = (req,res) => {
                 })
             }
         })
+}
+
+
+exports.uploadHostImage = (req, res) => {
+    const BusBoy = require('busboy');
+    const path = require('path');
+    const os = require('os');
+    const fs = require('fs');
+
+    let imageFileName;
+    let imageToBeUploaded = {};
+
+    const busBoy = new BusBoy({
+        headers: req.headers
+    })
+    busBoy.on('file', (fieldname, file, filename, encoding, mimetype) => {
+
+        if (mimetype !== 'image/jpeg' && mimetype !== 'image/png') {
+            return res.status(400).json({
+                error: 'Wrong File Type'
+            })
+
+        }
+        console.log(fieldname);
+        console.log(filename);
+        console.log(mimetype);
+        const imageExtension = filename.split('.')[filename.split('.').length - 1];
+        imageFileName = `${Math.round(Math.random()*10000000)}.${imageExtension}`;
+        const filepath = path.join(os.tmpdir(), imageFileName);
+        imageToBeUploaded = {
+            filepath,
+            mimetype
+        };
+
+        file.pipe(fs.createWriteStream(filepath));
+    });
+    busBoy.on('finish', () => {
+        admin.storage().bucket().upload(imageToBeUploaded.filepath, {
+                resumable: false,
+                metadata: {
+                    metadata: {
+                        contentType: imageToBeUploaded.mimetype
+                    }
+                }
+            })
+
+            .then(() => {
+                const imageUrl = `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${imageFileName}?alt=media`
+                return db.doc(`/hosts/${req.user.handle}`).update({
+                    imageUrl
+                });
+
+            })
+            .then(() => {
+                return res.json({
+                    message: "Image Uploaded"
+                })
+            })
+            .catch((err) => {
+                console.error(err);
+                return res.status(500).json({
+                    error: err.code
+                });
+            })
+    })
+    busBoy.end(req.rawBody);
+
 }
