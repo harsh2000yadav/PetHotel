@@ -30,7 +30,7 @@ const {
 //host
 app.post('/host/signUp',hostSignUp);
 app.post('/host/login',hostLogin);
-app.get('/host',commonAuth,hostData);
+app.get('/host',hostAuth,hostData);
 //user
 app.post('/user/signUp',signUp);
 app.post('/user/login',login);
