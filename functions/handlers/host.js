@@ -7,7 +7,7 @@ const {
 
 } = require('../util/validator');
 
-
+firebase.initializeApp(config);
 
 exports.hostSignUp = (req , res)=>{
     const newUser = {
@@ -20,7 +20,6 @@ exports.hostSignUp = (req , res)=>{
         address : req.body.address,
         phone:req.body.phone,  
         createdAt : req.body.createdAt,
-        image : req.body.image    
     };
 
     const {
@@ -29,7 +28,7 @@ exports.hostSignUp = (req , res)=>{
     } = validateSignupData(newUser);
 
     if(!valid) return res.status(400).json(errors);
-
+  let noImg = 'no-img.png' 
 
     let token,userId;
     db.doc(`/hosts/${newUser.handle}`).get()
@@ -51,12 +50,16 @@ exports.hostSignUp = (req , res)=>{
         .then((idtoken)=>{
              token = idtoken;
             const userData = {
+                name: newUser.name,
+                phone: newUser.phone,
+                body : newUser.body,
                 handle: newUser.handle,
                 email: newUser.email,
                 phone:newUser.phone,
-                address : newUser.address,
                 createdAt: new Date().toISOString(),
+                imageUrl : `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${noImg}?alt=media`,
                 hostId
+
             };
             return db.doc(`/hosts/${newUser.handle}`).set(userData);
         })
@@ -153,7 +156,7 @@ exports.uploadHostImage = (req, res) => {
             })
 
             .then(() => {
-                const imageUrl = `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${imageFileName}?alt=media`
+                const imageUrl = `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${imageFileName}?alt=media`;
                 return db.doc(`/hosts/${req.user.handle}`).update({
                     imageUrl
                 });

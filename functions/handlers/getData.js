@@ -16,7 +16,7 @@ exports.hostData = (req, res) => {
                     name : doc.data().name,
                     userHandle: doc.data().userHandle,
                     createdAt: doc.data().createdAt,
-                    userImage:doc.data().userImage,
+                    imageUrl:doc.data().imageUrl,
                     price : doc.data().price
                 })
             })
