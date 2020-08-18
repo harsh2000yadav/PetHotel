@@ -16,9 +16,9 @@ exports.validateSignupData = (data) =>{
     }else if(!isEmail(data.email)){
         errors.email = 'Must be a valid Email'
     }
-    if(isEmpty(data.password)) error.password = "Must not be empty"
-    if(isEmpty(data.confirmPassword)) error.confirmPassword = "Must not be empty"
-    if(data.password !== data.confirmPassword) error.validPassword = "Password must be equal"
+    if(isEmpty(data.password)) errors.password = "Must not be empty"
+    if(isEmpty(data.confirmPassword)) errors.confirmPassword = "Must not be empty"
+    if(data.password !== data.confirmPassword) errors.validPassword = "Password must be equal"
     if(isEmpty(data.handle)) errors.handle = 'Must not be empty'
 
     return {
