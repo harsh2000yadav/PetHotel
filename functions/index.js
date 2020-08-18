@@ -5,7 +5,7 @@ const config = require('./util/config')
 const firebase = require('firebase');
 var cors = require('cors');
 app.use(cors());
-firebase.initializeApp(config);
+// firebase.initializeApp(config);
 const {
     db,
     admin,
@@ -34,8 +34,8 @@ app.post('/host/login',hostLogin);
 
 
 app.get('/host',hostData);
-app.post('/host/image',uploadHostImage);
 
+app.post('/host/image',hostAuth,uploadHostImage);
 //user
 app.post('/user/signUp',signUp);
 app.post('/user/login',login);
