@@ -27,7 +27,7 @@ exports.hostSignUp = (req , res)=>{
         errors
     } = validateSignupData(newUser);
 
-    if(!valid) return res.status(400).json(errors);
+  if(!valid) return res.status(400).json(errors);
   let noImg = 'no-img.png' 
 
     let token,userId;
@@ -71,7 +71,7 @@ exports.hostSignUp = (req , res)=>{
         .catch((err)=>{
             console.error(err);
             return res.status(500).json({
-                error : err.code
+                errors : err.code
             });
         })
 }
@@ -175,5 +175,24 @@ exports.uploadHostImage = (req, res) => {
             })
     })
     busBoy.end(req.rawBody);
+
+}
+
+exports.getAuthenticatedUser = (req, res) => {
+    let userData = {};
+    db.doc(`/hosts/${req.user.handle}`).get()
+        .then(doc => {
+            if (doc.exists) {
+                userData.userCredentials = doc.data();
+                return res.json(userData)
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            return res.status(500).json({
+                error: err.code
+            })
+        })
+
 
 }

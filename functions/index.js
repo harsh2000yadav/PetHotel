@@ -21,7 +21,8 @@ const {
 const {
     hostSignUp,
     hostLogin,
-    uploadHostImage
+    uploadHostImage,
+    getAuthenticatedUser
 } = require('./handlers/host');
 
 const {
@@ -31,7 +32,8 @@ const {
 //host
 app.post('/host/signUp',hostSignUp);
 app.post('/host/login',hostLogin);
-app.get('/host',hostData);
+app.get('/host',hostAuth,getAuthenticatedUser);
+app.get('/hosts',hostData);
 app.post('/host/image',hostAuth,uploadHostImage);
 //user
 app.post('/user/signUp',signUp);
